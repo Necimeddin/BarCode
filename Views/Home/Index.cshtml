@@ -1,0 +1,37 @@
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "Home Page";
+    var token = Antiforgery.GetAndStoreTokens(ViewContext.HttpContext).RequestToken;
+}
+
+<h2>Excel Yukle</h2>
+
+<input type="file" id="fileInput" accept=".xlsx,.xls" />
+
+<input type="hidden" id="antiForgeryToken" value="@token" />
+
+<script>
+    document.getElementById("fileInput").addEventListener("change", function () {
+        let file = this.files[0];
+        if (!file) return;
+
+        let formData = new FormData();
+        formData.append("file", file);
+
+        // Anti-forgery token
+        let token = document.getElementById("antiForgeryToken").value;
+        formData.append("__RequestVerificationToken", token);
+
+        fetch("/Home/UploadFile", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.text())
+        .then(data => {
+            console.log(data); // server cavabı
+            alert(data);       // debug üçün popup
+        })
+        .catch(err => console.error(err));
+    });
+</script>
