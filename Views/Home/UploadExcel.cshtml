@@ -1,0 +1,136 @@
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@section PageBackground {
+    <style>
+        body {
+            background: radial-gradient(circle at top, #0d1736, #000000);
+        }
+    </style>
+}
+
+@{
+    ViewData["Title"] = "Excel Yüklə";
+    var token = Antiforgery.GetAndStoreTokens(ViewContext.HttpContext).RequestToken;
+}
+
+<div class="upload-wrapper d-flex align-items-center justify-content-center">
+    <div class="upload-card p-5 text-center">
+
+        <h2 class="text-neon mb-4">Excel Yüklə</h2>
+
+        <div class="upload-zone p-4 rounded-4" id="uploadArea">
+
+            <i class="bi bi-cloud-upload-fill upload-icon"></i>
+
+            <p class="text-light fs-5 mt-3">
+                Excel faylını seç və ya buraya sürüklə
+            </p>
+            <small class="text-secondary">(.xlsx və .xls)</small>
+
+            <form id="uploadForm" method="post" enctype="multipart/form-data" action="/Home/UploadFile">
+                <input type="hidden" name="__RequestVerificationToken" value="@token" />
+                <input type="file" name="file" id="fileInput" accept=".xlsx,.xls" class="d-none" required />
+            </form>
+
+            <button class="btn btn-neon mt-4 px-4 btn-lg" onclick="selectFile()">Faylı Seç</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: radial-gradient(circle at top, #0d1736, #000000);
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    .upload-wrapper {
+        height: 100vh;
+        padding: 0 20px;
+    }
+
+    .upload-card {
+        width: 480px;
+        background: rgba(15, 25, 55, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid #1b2b55;
+        border-radius: 20px;
+        box-shadow: 0 0 25px rgba(0, 123, 255, 0.25);
+    }
+
+    .text-neon {
+        color: #4da3ff;
+        font-weight: 700;
+        text-shadow: 0 0 10px #005eff;
+    }
+
+    .upload-zone {
+        border: 2px dashed #4da3ff;
+        transition: 0.3s;
+        background: rgba(10, 20, 40, 0.6);
+    }
+
+        .upload-zone:hover {
+            border-color: #7bc2ff;
+            background: rgba(15, 30, 60, 0.75);
+            box-shadow: 0 0 15px rgba(0, 119, 255, 0.4);
+        }
+
+    .upload-icon {
+        font-size: 65px;
+        color: #4da3ff;
+        text-shadow: 0 0 15px #007bff;
+    }
+
+    .btn-neon {
+        background: #007bff;
+        border: none;
+        color: white;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: 0.25s;
+        box-shadow: 0 0 10px rgba(0, 140, 255, 0.4);
+    }
+
+        .btn-neon:hover {
+            background: #4da3ff;
+            box-shadow: 0 0 20px rgba(0, 140, 255, 0.7);
+            transform: translateY(-2px);
+        }
+
+    .drag-over {
+        border-color: #009dff !important;
+        background: rgba(20, 40, 80, 0.8) !important;
+        box-shadow: 0 0 25px rgba(0, 170, 255, 0.6) !important;
+    }
+</style>
+
+<script>
+    function selectFile() {
+        document.getElementById("fileInput").click();
+    }
+
+    document.getElementById("fileInput").addEventListener("change", function () {
+        if (this.files.length > 0) {
+            document.getElementById("uploadForm").submit();
+        }
+    });
+
+    const uploadArea = document.getElementById("uploadArea");
+
+    uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.classList.add("drag-over");
+    });
+
+    uploadArea.addEventListener("dragleave", () => {
+        uploadArea.classList.remove("drag-over");
+    });
+
+    uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove("drag-over");
+        document.getElementById("fileInput").files = e.dataTransfer.files;
+        document.getElementById("uploadForm").submit();
+    });
+</script>

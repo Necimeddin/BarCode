@@ -27,45 +27,42 @@ namespace MoneyExe.Controllers
             return View();
         }
 
+        public IActionResult UploadExcel()
+        {
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UploadFile(IFormFile file)
         {
             if (file == null)
-            {
-                Console.WriteLine("File is null!");
                 return BadRequest("File not selected");
-            }
 
-            Console.WriteLine("File received: " + file.FileName);
+            string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
 
-            try
+            string filePath = Path.Combine(uploadsFolder, file.FileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                // wwwroot/uploads qovluğunu yoxla, yoxdursa yarat
-                string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
-                if (!Directory.Exists(uploadsFolder))
-                    Directory.CreateDirectory(uploadsFolder);
-
-                // Faylı wwwroot/uploads daxilində save et
-                string filePath = Path.Combine(uploadsFolder, file.FileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    file.CopyTo(stream);
-                }
-
-                // Barcode yaratma metodunu çağır, indi filePath-i veririk
-                GenerateBarcodes(filePath);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Xəta: " + ex.Message);
-                return StatusCode(500, "Barcode yaratmaq alınmadı: " + ex.Message);
+                file.CopyTo(stream);
             }
 
-            return Ok("File received and barcode generated: " + file.FileName);
+            // Output faylını yarat
+            string outputFilePath = GenerateBarcodes(filePath);
+
+            // ---- İSTİFADƏÇİYƏ FAYLI GÖNDƏRİRİK ----
+            var bytes = System.IO.File.ReadAllBytes(outputFilePath);
+
+            return File(
+                bytes,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                Path.GetFileName(outputFilePath)
+            );
         }
 
-        public void GenerateBarcodes(string inputPath)
+        public string GenerateBarcodes(string inputPath)
         {
             string outputPath = Path.Combine(Path.GetDirectoryName(inputPath), "Output_" + Path.GetFileName(inputPath));
 
@@ -117,6 +114,7 @@ namespace MoneyExe.Controllers
 
             // Faylı qeyd edirik
             wb.SaveAs(outputPath);
+            return outputPath;
         }
 
         // =====================

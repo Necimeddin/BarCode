@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿@* <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -7,43 +7,125 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MoneyExe.styles.css" asp-append-version="true" />
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden !important; /* Scroll TAM bağlanır */
+            background: #000; /* Arxa fon qaralır (istəsən dəyişərik) */
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MoneyExe</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - MoneyExe - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+    <header></header>
+
+    <main role="main" style="height: 100%;">
+        @RenderBody()
+    </main>
+
+    <footer></footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+</html> *@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MoneyExe</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            height: 100vh;
+            width: 240px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: #0d1736;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+        }
+
+            .sidebar .brand {
+                font-size: 1.5rem;
+                font-weight: bold;
+                padding: 0 20px;
+                margin-bottom: 30px;
+                color: #4da3ff;
+            }
+
+            .sidebar a {
+                color: #bcdcff;
+                text-decoration: none;
+                padding: 10px 20px;
+                display: block;
+                transition: 0.2s;
+            }
+
+                .sidebar a:hover {
+                    background: #1b2b55;
+                    color: #fff;
+                    text-shadow: 0 0 5px #0d6efd;
+                }
+
+            .sidebar .submenu {
+                padding-left: 20px;
+            }
+
+        /* Main content */
+        .content {
+            margin-left: 240px;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+    </style>
+
+    @RenderSection("PageBackground", required: false)
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">Menyular</div>
+
+        <a href="#" data-bs-toggle="collapse" data-bs-target="#excelMenu" aria-expanded="false">
+            Excel
+        </a>
+        <div class="collapse submenu" id="excelMenu">
+            <a href="@Url.Action("UploadExcel", "Home")">Excel Faylı Yüklə</a>
+        </div>
+
+        @* Burada gələcəkdə digər menyular əlavə oluna bilər *@
+    </div>
+
+    <!-- Main content -->
+    <div class="content">
+        @RenderBody()
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
 </html>
+

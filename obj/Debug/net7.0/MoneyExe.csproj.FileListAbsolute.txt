@@ -53,3 +53,4 @@ C:\Visual tasks\MoneyExe\bin\Debug\net7.0\Microsoft.Win32.SystemEvents.dll
 C:\Visual tasks\MoneyExe\bin\Debug\net7.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
 C:\Visual tasks\MoneyExe\bin\Debug\net7.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
 C:\Visual tasks\MoneyExe\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
+C:\Visual tasks\MoneyExe\obj\Debug\net7.0\MoneyExe.sourcelink.json
