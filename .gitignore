@@ -4,3 +4,25 @@
 
 /.vs
 /wwwroot/uploads/Output_SharifExcel - Copy.xlsx
+/bin/Debug/net7.0/MoneyExe.dll
+/bin/Debug/net7.0/MoneyExe.exe
+/bin/Debug/net7.0/MoneyExe.pdb
+/bin/Debug/net7.0/MoneyExe.staticwebassets.endpoints.json
+/bin/Debug/net7.0/MoneyExe.staticwebassets.runtime.json
+/obj/Debug/net7.0/apphost.exe
+/obj/Debug/net7.0/MoneyExe.AssemblyInfo.cs
+/obj/Debug/net7.0/MoneyExe.AssemblyInfoInputs.cache
+/obj/Debug/net7.0/MoneyExe.dll
+/obj/Debug/net7.0/MoneyExe.pdb
+/obj/Debug/net7.0/MoneyExe.sourcelink.json
+/obj/Debug/net7.0/ref/MoneyExe.dll
+/obj/Debug/net7.0/refint/MoneyExe.dll
+/obj/Debug/net7.0/rjimswa.dswa.cache.json
+/obj/Debug/net7.0/rjsmcshtml.dswa.cache.json
+/obj/Debug/net7.0/rjsmrazor.dswa.cache.json
+/obj/Debug/net7.0/rpswa.dswa.cache.json
+/obj/Debug/net7.0/staticwebassets.build.endpoints.json
+/obj/Debug/net7.0/staticwebassets.build.json
+/obj/Debug/net7.0/staticwebassets.build.json.cache
+/obj/Debug/net7.0/staticwebassets.development.json
+/obj/Debug/net7.0/staticwebassets.upToDateCheck.txt
