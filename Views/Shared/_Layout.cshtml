@@ -1,40 +1,4 @@
-﻿@* <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MoneyExe</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/MoneyExe.styles.css" asp-append-version="true" />
-
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            overflow: hidden !important; /* Scroll TAM bağlanır */
-            background: #000; /* Arxa fon qaralır (istəsən dəyişərik) */
-        }
-    </style>
-</head>
-<body>
-
-    <header></header>
-
-    <main role="main" style="height: 100%;">
-        @RenderBody()
-    </main>
-
-    <footer></footer>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
-</html> *@
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -107,7 +71,7 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <div class="brand">Menyular</div>
+        <div class="brand">Menyu</div>
 
         <a href="#" data-bs-toggle="collapse" data-bs-target="#excelMenu" aria-expanded="false">
             Excel
@@ -128,4 +92,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-

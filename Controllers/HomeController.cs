@@ -13,7 +13,6 @@ using Rectangle = System.Drawing.Rectangle;
 
 namespace MoneyExe.Controllers
 {
-
     public class HomeController : Controller
     {
         private readonly IWebHostEnvironment _env;
