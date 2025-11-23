@@ -1,13 +1,5 @@
 ﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 
-@section PageBackground {
-    <style>
-        body {
-            background: radial-gradient(circle at top, #0d1736, #000000);
-        }
-    </style>
-}
-
 @{
     ViewData["Title"] = "Excel Yüklə";
     var token = Antiforgery.GetAndStoreTokens(ViewContext.HttpContext).RequestToken;
@@ -15,6 +7,7 @@
 
 <div class="upload-wrapper d-flex align-items-center justify-content-center">
     <div class="upload-card p-5 text-center">
+
 
         <h2 class="text-neon mb-4">Excel Yüklə</h2>
 
@@ -27,14 +20,21 @@
             </p>
             <small class="text-secondary">(.xlsx və .xls)</small>
 
+            <!-- Gizli file input form-un içində -->
             <form id="uploadForm" method="post" enctype="multipart/form-data" action="/Home/UploadFile">
                 <input type="hidden" name="__RequestVerificationToken" value="@token" />
                 <input type="file" name="file" id="fileInput" accept=".xlsx,.xls" class="d-none" required />
+                <!-- Button indi form-un içində -->
+                <button type="button" class="btn btn-neon mt-4 px-4 btn-lg" onclick="selectFile()">Faylı Seç</button>
             </form>
 
-            <button class="btn btn-neon mt-4 px-4 btn-lg" onclick="selectFile()">Faylı Seç</button>
         </div>
     </div>
+</div>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);color:white;z-index:9999;align-items:center;justify-content:center;font-size:2rem;">
+    Yüklənir...
 </div>
 
 <style>
@@ -106,19 +106,61 @@
 </style>
 
 <script>
+    const token = '@token';
+
     function selectFile() {
         document.getElementById("fileInput").click();
     }
 
+    function showLoading() {
+        document.getElementById("loadingOverlay").style.display = "flex";
+    }
+
+    function hideLoading() {
+        document.getElementById("loadingOverlay").style.display = "none";
+    }
+
+    function uploadFile(file) {
+        const formData = new FormData();
+        formData.append("__RequestVerificationToken", token);
+        formData.append("file", file);
+
+        showLoading();
+
+        fetch("/Home/UploadFile", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Xəta baş verdi");
+            return response.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = file.name.replace(".xlsx", "_output.xlsx");
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(err => alert(err.message))
+        .finally(() => {
+            hideLoading();
+        });
+    }
+
     document.getElementById("fileInput").addEventListener("change", function () {
         if (this.files.length > 0) {
-            document.getElementById("uploadForm").submit();
+            uploadFile(this.files[0]);
         }
     });
 
+    // Drag & drop
     const uploadArea = document.getElementById("uploadArea");
 
-    uploadArea.addEventListener("dragover", (e) => {
+    uploadArea.addEventListener("dragover", e => {
         e.preventDefault();
         uploadArea.classList.add("drag-over");
     });
@@ -127,10 +169,11 @@
         uploadArea.classList.remove("drag-over");
     });
 
-    uploadArea.addEventListener("drop", (e) => {
+    uploadArea.addEventListener("drop", e => {
         e.preventDefault();
         uploadArea.classList.remove("drag-over");
-        document.getElementById("fileInput").files = e.dataTransfer.files;
-        document.getElementById("uploadForm").submit();
+        if (e.dataTransfer.files.length > 0) {
+            uploadFile(e.dataTransfer.files[0]);
+        }
     });
 </script>

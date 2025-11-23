@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MoneyExe")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+338c724d87b5f947c4313061f1cf6035fba9df32")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9cad11a351d941b794873a2a8840daa06770d1fd")]
 [assembly: System.Reflection.AssemblyProductAttribute("MoneyExe")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MoneyExe")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
