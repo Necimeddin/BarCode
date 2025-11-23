@@ -36,35 +36,41 @@ namespace MoneyExe.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult UploadFile(IFormFile file)
         {
-            if (file == null)
-                return BadRequest("File not selected");
-
-            string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            string filePath = Path.Combine(uploadsFolder, file.FileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            try
             {
-                file.CopyTo(stream);
+                if (file == null)
+                    return BadRequest("File not selected");
+
+                string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                string filePath = Path.Combine(uploadsFolder, file.FileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+                string outputFilePath = GenerateBarcodes(filePath);
+                var bytes = System.IO.File.ReadAllBytes(outputFilePath);
+
+                return File(
+                    bytes,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    Path.GetFileName(outputFilePath)
+                );
+            }
+            catch (Exception ex)
+            {
+
+                throw;
             }
 
-            // Output faylını yarat
-            string outputFilePath = GenerateBarcodes(filePath);
-
-            // ---- İSTİFADƏÇİYƏ FAYLI GÖNDƏRİRİK ----
-            var bytes = System.IO.File.ReadAllBytes(outputFilePath);
-
-            return File(
-                bytes,
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                Path.GetFileName(outputFilePath)
-            );
         }
 
         public string GenerateBarcodes(string inputPath)
         {
-            string outputPath = Path.Combine(Path.GetDirectoryName(inputPath), "Output_" + Path.GetFileName(inputPath));
+            var extension = Path.GetExtension(inputPath);
+            string outputPath = Path.Combine(Path.GetDirectoryName(inputPath), $"Barcode_{DateTime.Now.ToString("f")}{Path.GetExtension(inputPath)}");
 
             var wb = new XLWorkbook(inputPath);
             var ws = wb.Worksheet(1);
@@ -84,7 +90,7 @@ namespace MoneyExe.Controllers
             // Sətirləri iterasiya edirik
             int lastRow = ws.LastRowUsed().RowNumber();
 
-            for (int row = 5; row <= lastRow; row++)
+            for (int row = 1; row <= lastRow; row++)
             {
                 string ssccValue = ws.Cell(row, ssccCol).GetString().Trim();
 
@@ -99,12 +105,17 @@ namespace MoneyExe.Controllers
                     imageBytes = GenerateBarcodeImageSafe(extracted);
                     barcodeCache[extracted] = imageBytes;
                 }
+                int lastColumn = ws.Row(row).LastCellUsed().Address.ColumnNumber;
+
+                // Növbəti boş sütunu tapırıq (son sütundan sonra)
+                int targetColumn = lastColumn + 1;
+
 
                 // Şəkli Excel-ə əlavə edirik
                 using (var ms = new MemoryStream(imageBytes))
                 {
                     var img = ws.AddPicture(ms)
-                                .MoveTo(ws.Cell(row, 13));
+                                .MoveTo(ws.Cell(row, targetColumn));
 
                     // Şəkilin ölçüsünü piksel ilə təyin edirik
                     img.Width = 80;   // 80px genişlik
@@ -122,26 +133,29 @@ namespace MoneyExe.Controllers
         // =====================
         private int FindSsccColumn(IXLWorksheet ws)
         {
-            var headerRow = ws.Row(1);
+            int lastCol = ws.LastColumnUsed().ColumnNumber();
+            int lastRow = ws.LastRowUsed().RowNumber();
 
-            // 1) Birbaşa "SSCC" başlığını tapırıq
-            foreach (var cell in headerRow.CellsUsed())
+            // 1) Bütün sütunlarda "SSCC" başlığını axtar (bütün sətirlərdə)
+            for (int row = 1; row <= Math.Min(10, lastRow); row++) // İlk 10 sətirdə axtar
             {
-                string colName = cell.GetString().Trim().ToLower();
-                if (colName == "sscc")
-                    return cell.Address.ColumnNumber;
+                for (int col = 1; col <= lastCol; col++)
+                {
+                    string cellValue = ws.Cell(row, col).GetString().Trim().ToLower();
+                    if (cellValue == "sscc")
+                        return col;
+                }
             }
 
             // 2) Avtomatik tapma: yalnız TAM 18 rəqəmli xanalar
-            int lastCol = ws.LastColumnUsed().ColumnNumber();
-
             for (int col = 1; col <= lastCol; col++)
             {
                 int matchCount = 0;
+                int checkedRows = 0;
 
-                for (int row = 2; row <= 20; row++)
+                for (int row = 1; row <= lastRow && checkedRows < 50; row++) // İlk 50 sətirdə yoxla
                 {
-                    string val = ws.Cell(row, col).GetString();
+                    string val = ws.Cell(row, col).GetString().Trim();
 
                     // TAM 18 rəqəmli SSCC yoxla
                     if (!string.IsNullOrWhiteSpace(val) &&
@@ -150,6 +164,7 @@ namespace MoneyExe.Controllers
                     {
                         matchCount++;
                     }
+                    checkedRows++;
                 }
 
                 // Ən az 3 uyğunluq varsa — bu SSCC sütunudur
@@ -159,7 +174,6 @@ namespace MoneyExe.Controllers
 
             return -1;
         }
-
 
         // =====================
         //   Extract SSCC
